@@ -2,27 +2,8 @@ from typing import List
 
 Cards = List[int]
 
-SUITS = ['C', 'D', 'H', 'S']
-CARD_NAMES = ['A'] + [str(i) for i in range(2, 11)] + ['J', 'Q', 'K']
-DECK = [n + s for s in SUITS for n in CARD_NAMES]
+# Number of points earned by 0-4 copies of the same card value.
 PAIRS = (0, 0, 2, 6, 12)
-
-
-def card_number(name: str) -> int:
-    return DECK.index(name.upper())
-
-
-def card_value(card: int) -> int:
-    return min(10, 1 + card % 13)
-
-
-def ways_to_make_sum(n: int, l: List[int]) -> int:
-    if n <= 0 or len(l) == 0:
-        return 0
-    if l[0] == n:
-        return 1 + ways_to_make_sum(n, l[1:])
-    else:
-        return ways_to_make_sum(n - l[0], l[1:]) + ways_to_make_sum(n, l[1:])
 
 
 def score(hand: Cards, start: int, is_crib: bool) -> int:
@@ -64,26 +45,8 @@ def score(hand: Cards, start: int, is_crib: bool) -> int:
             product *= n
             run += 1
     # 15's
-    points += 2 * ways_to_make_sum(15, [card_value(h) for h in hand])
+    points += 2 * _ways_to_make_sum(15, [_card_value(h) for h in hand])
     return points
-
-
-def score_cards(h: str, s: str, crib: bool = False) -> int:
-    return score([card_number(c) for c in h.split(',')], card_number(s), crib)
-
-
-def is_run(sub_seq: List[int]) -> bool:
-    seq_len = len(sub_seq)
-    val_seq = [s % 13 for s in sub_seq]
-    if max(val_seq) - min(val_seq) != seq_len - 1:
-        return False
-    if len(set(val_seq)) != seq_len:
-        return False
-    return True
-
-
-def score_card_seq(h: str) -> int:
-    return score_sequence([card_number(c) for c in h.split(',')])
 
 
 def score_sequence(seq: List[int]) -> int:
@@ -99,13 +62,32 @@ def score_sequence(seq: List[int]) -> int:
     points += PAIRS[run]
     if len(seq) >= 3:
         for i in range(min(len(seq), 8), 2, -1):
-            if is_run(seq[-i:]):
+            if _is_run(seq[-i:]):
                 points += i
-    count = sum(card_value(s) for s in seq)
+    count = sum(_card_value(s) for s in seq)
     if count == 15 or count == 31:
         points += 2
     return points
 
 
-if __name__ == '__main__':
-    print(score_cards('2c,3c,4c,5c', '6d', False))
+def _card_value(card: int) -> int:
+    return min(10, 1 + card % 13)
+
+
+def _ways_to_make_sum(n: int, l: List[int]) -> int:
+    if n <= 0 or len(l) == 0:
+        return 0
+    if l[0] == n:
+        return 1 + _ways_to_make_sum(n, l[1:])
+    else:
+        return _ways_to_make_sum(n - l[0], l[1:]) + _ways_to_make_sum(n, l[1:])
+
+
+def _is_run(sub_seq: List[int]) -> bool:
+    seq_len = len(sub_seq)
+    val_seq = [s % 13 for s in sub_seq]
+    if max(val_seq) - min(val_seq) != seq_len - 1:
+        return False
+    if len(set(val_seq)) != seq_len:
+        return False
+    return True
