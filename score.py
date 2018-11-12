@@ -1,12 +1,11 @@
 from typing import List
 
-Cards = List[int]
 
 # Number of points earned by 0-4 copies of the same card value.
 PAIRS = (0, 0, 2, 6, 12)
 
 
-def score(hand: Cards, start: int, is_crib: bool) -> int:
+def score(hand: List[int], start: int, is_crib: bool) -> int:
     points = 0
     # nibs
     start_suit = start // 13
@@ -45,7 +44,7 @@ def score(hand: Cards, start: int, is_crib: bool) -> int:
             product *= n
             run += 1
     # 15's
-    points += 2 * _ways_to_make_sum(15, [_card_value(h) for h in hand])
+    points += 2 * _ways_to_make_sum(15, [card_value(h) for h in hand])
     return points
 
 
@@ -64,13 +63,13 @@ def score_sequence(seq: List[int]) -> int:
         for i in range(min(len(seq), 8), 2, -1):
             if _is_run(seq[-i:]):
                 points += i
-    count = sum(_card_value(s) for s in seq)
+    count = sum(card_value(s) for s in seq)
     if count == 15 or count == 31:
         points += 2
     return points
 
 
-def _card_value(card: int) -> int:
+def card_value(card: int) -> int:
     return min(10, 1 + card % 13)
 
 
