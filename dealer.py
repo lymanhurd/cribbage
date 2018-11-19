@@ -31,17 +31,18 @@ class Deal:
         self.committed = True
         return h.hexdigest()
 
-    # The human has the option of further shuffling the first 13 cards (6 for each hand plus one to determine dealer).
+    # The human has the option of further shuffling the cards.
     def human_hand(self, seed: List[int] = None) -> List[int]:
         if not self.committed:
             raise CribbageError('Must call commit_deal() first.')
         if seed:
-            if len(set(seed)) != 13:
+            if len(set(seed)) != 52:
                 raise CribbageError('Invalid seed {}.'.format(seed))
             if min(seed) < 0 or max(seed) > 51:
                 raise CribbageError('Invalid seed {}.'.format(seed))
             for i in range(13):
-                self.deck[i] = (self.deck[i] + seed[i]) % 52
+                self.deck[i] = seed[self.deck[i]]
+            assert len(set(self.deck)) == 52
         self.seeded = True
         return self.deck[:6]
 
@@ -55,7 +56,13 @@ class Deal:
     def human_is_dealer(self) -> bool:
         if not self.seeded:
             raise CribbageError('Must call human_hand() first.')
-        return self.deck[12] % 2 == 0
+        return self.deck[51] % 2 == 0
+
+    # The traditional cut for deal has the problem of ties.  Therefore we use an equivalent method.
+    def start_card(self) -> bool:
+        if not self.seeded:
+            raise CribbageError('Must call human_hand() first.')
+        return self.deck[12]
 
     # Once all the cards have been revealed, the human can verify the entire initial deal.
     def mark_hand_completed(self):
@@ -71,7 +78,7 @@ if __name__ == "__main__":
     d = Deal()
     print(d.deck)
     print(d.commit_deal())
-    print(d.human_hand(list(range(13))))
+    print(d.human_hand(list(range(52))))
     print(d.computer_hand())
     print(d.human_is_dealer())
     d.mark_hand_completed()

@@ -8,13 +8,12 @@ import score
 
 # noinspection PyUnusedLocal
 class CribbagePlayer:
-    def __init__(self, hand: List[int], is_dealer: bool):
-        self.hand: List[int] = hand
-        self.is_dealer: bool = is_dealer
+    def __init__(self):
+        self.hand: List[int] = None
         self.computer_score = 0
         self.human_score = 0
 
-    def discard_cards(self, human_score: int, computer_score: int) -> List[int]:
+    def discard_cards(self, human_score: int = 0, computer_score: int = 0) -> List[int]:
         """discard_cards chooses two cards to discard to crib"""
         assert len(self.hand) == 6
         discards = self.hand[:2]
@@ -23,11 +22,10 @@ class CribbagePlayer:
 
     def new_hand(self, hand):
         """Restarts next hand and dealer status toggles."""
-        assert len(self.hand) == 0
+        assert len(hand) == 6
         self.hand = hand
-        self.is_dealer = not self.is_dealer
 
-    def play_card(self, seq: List[int], human_score: int, computer_score: int) -> int:
+    def play_card(self, seq: List[int], human_score: int = 0, computer_score: int = 0) -> int:
         """play_card chooses next card to play.  A return of -1 signifies saying Go"""
         assert 0 < len(self.hand) <= 4
         count = sum(score.card_value(s) for s in seq)

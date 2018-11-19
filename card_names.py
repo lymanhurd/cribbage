@@ -1,3 +1,4 @@
+from typing import List
 import score
 
 """Some convenience methods for referring to cards by their ASCII names (case insensitive)."""
@@ -24,9 +25,14 @@ def score_card_seq(h: str) -> int:
     return score.score_sequence([_card_number(c) for c in h.split(',')])
 
 
+def card_names(cards: List[int]) -> str:
+    return ' '.join([DECK[c] for c in cards])
+
+
 def _card_number(name: str) -> int:
     return DECK.index(name.upper())
 
 
 if __name__ == '__main__':
-    print(score_cards('2c,3c,4c,5c', '6d', False))
+    # print(score_cards('2c,3c,4c,5c', '6d', False))
+    print(score_cards('5c,2h,10d,2c', 'ks', False))

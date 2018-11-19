@@ -5,7 +5,8 @@ from typing import List
 PAIRS = (0, 0, 2, 6, 12)
 
 
-def score(hand: List[int], start: int, is_crib: bool) -> int:
+def score(hd: List[int], start: int, is_crib: bool = False) -> int:
+    hand = hd[:]
     points = 0
     # nibs
     start_suit = start // 13
@@ -38,8 +39,8 @@ def score(hand: List[int], start: int, is_crib: bool) -> int:
         if n == 0:
             if run >= 3:
                 points += run * product
-                run = 0
-                product = 1
+            run = 0
+            product = 1
         else:
             product *= n
             run += 1
